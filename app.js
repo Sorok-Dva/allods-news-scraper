@@ -11,7 +11,7 @@ const Discord = require('discord.js'),
   CronJob = require('cron').CronJob,
   Bot = require('./bot')
 
-let guilds = []
+let guilds = [], activityTick = 0
 
 const client = new Discord.Client()
 const token = config.BOT_TOKEN
@@ -34,7 +34,18 @@ let cookie = 'p=uAMAAL2tJQAA; namc_lang=fr_FR; splash=creation; has_js=1; s=rt=1
       'Accept': '/',
       'Connection': 'keep-alive',
     },
+  };
+
+const setActivity = (client) => {
+  if (activityTick === 0) {
+    client.user.setActivity(`Giving Allods News to ${guilds.length} servers`)
+    activityTick = 1
   }
+  if (activityTick === 1) {
+    client.user.setActivity(`Developed by Сорок два with ❤️`)
+    activityTick = 0
+  }
+}
 
 client.once('ready', () => {
   console.log('Bot connected')
@@ -47,10 +58,11 @@ client.once('ready', () => {
     guilds.push(guild)
   })
 
-  const job = new CronJob('0 * * * *', () => getLastNews(guilds).then(r => r))
-  job.start()
+  const scrappingJob = new CronJob('0 * * * *', () => getLastNews(guilds).then(r => r))
+  const activityJob = new CronJob('*/15 * * * *', () => setActivity(client))
 
-  client.user.setActivity(`Give Allods News to ${guilds.length} servers`)
+  scrappingJob.start()
+  activityJob.start()
 })
 
 client.on('guildCreate', (guild) => {
@@ -59,6 +71,7 @@ client.on('guildCreate', (guild) => {
     if (!err && row === undefined) db.run('INSERT INTO guilds(id) VALUES(?)', [guild.id])
   })
   guilds.push(guild)
+  client.user.setActivity(`Give Allods News to ${guilds.length} servers`)
 })
 
 client.on('guildDelete', (guild) => {
@@ -66,6 +79,7 @@ client.on('guildDelete', (guild) => {
   db.get('DELETE FROM guilds WHERE id = ?', [guild.id])
   db.get('DELETE FROM news WHERE guild = ?', [guild.id])
   guilds = guilds.filter(g => g.id !== guild.id)
+  client.user.setActivity(`Give Allods News to ${guilds.length} servers`)
 })
 
 let getLastNews = async (guilds) => {
