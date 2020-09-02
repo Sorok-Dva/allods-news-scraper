@@ -134,20 +134,19 @@ let getLastNews = async (guilds) => {
                   .catch(err => console.log(err))
               }
 
-              await db.run('INSERT INTO news (guild, name, date) VALUES (?, ?, ?)', [guild.id, (title + link), date], async () => {
-                const embed = new Discord.RichEmbed()
-                  .setTitle(title)
-                  .setColor(0x00AE86)
-                  .setDescription(desc)
-                  .setThumbnail(type)
-                  .setTimestamp()
-                  .setURL('https://allods.my.games' + link)
+              await db.run('INSERT INTO news (guild, name, date) VALUES (?, ?, ?)', [guild.id, (title + link), date])
+              const embed = new Discord.RichEmbed()
+                .setTitle(title)
+                .setColor(0x00AE86)
+                .setDescription(desc)
+                .setThumbnail(type)
+                .setTimestamp()
+                .setURL('https://allods.my.games' + link)
 
-                await guild.channels
-                  .find(chan => chan.name === 'allods-news')
-                  .send({embed})
-                  .catch(err => console.log(err))
-              })
+              await guild.channels
+                .find(chan => chan.name === 'allods-news')
+                .send({embed})
+                .catch(err => console.log(err))
             }
           })
         })
