@@ -72,6 +72,7 @@ client.on('guildCreate', (guild) => {
   })
   guilds.push(guild)
   client.user.setActivity(`Give Allods News to ${guilds.length} servers`)
+  getLastNews([guild]).then(r => r)
 })
 
 client.on('guildDelete', (guild) => {
