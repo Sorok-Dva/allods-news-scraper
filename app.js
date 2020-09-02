@@ -11,6 +11,8 @@ const Discord = require('discord.js'),
   CronJob = require('cron').CronJob,
   Bot = require('./bot')
 
+let guilds = []
+
 const client = new Discord.Client()
 const token = config.BOT_TOKEN
 
@@ -35,9 +37,8 @@ let cookie = 'p=uAMAAL2tJQAA; namc_lang=fr_FR; splash=creation; has_js=1; s=rt=1
   }
 
 client.once('ready', () => {
-  console.log('Bot connected to server')
+  console.log('Bot connected')
 
-  const guilds = []
   client.guilds.forEach(guild => {
     db.get('SELECT * FROM guilds WHERE id = ?', [guild.id], (err, row) => {
       console.log(row)
@@ -46,12 +47,25 @@ client.once('ready', () => {
     guilds.push(guild)
   })
 
-  const retrieveNews = new CronJob('0 * * * *', () => {
-    getLastNews(guilds).then(r => r)
-  })
-  retrieveNews.start()
+  const job = new CronJob('0 * * * *', () => getLastNews(guilds).then(r => r))
+  job.start()
 
   client.user.setActivity(`Give Allods News to ${guilds.length} servers`)
+})
+
+client.on('guildCreate', (guild) => {
+  console.log('Bot has join server @', guild.id)
+  db.get('SELECT * FROM guilds WHERE id = ?', [guild.id], (err, row) => {
+    if (!err && row === undefined) db.run('INSERT INTO guilds(id) VALUES(?)', [guild.id])
+  })
+  guilds.push(guild)
+})
+
+client.on('guildDelete', (guild) => {
+  console.log('Bot has left server @', guild.id)
+  db.get('DELETE FROM guilds WHERE id = ?', [guild.id])
+  db.get('DELETE FROM news WHERE guild = ?', [guild.id])
+  guilds = guilds.filter(g => g.id !== guild.id)
 })
 
 let getLastNews = async (guilds) => {
