@@ -1,0 +1,17 @@
+{
+  "name": "AllodsNewsRetriever",
+  "version": "0.0.1",
+  "private": true,
+  "author": "Сорок два",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.3",
+    "cron": "^1.8.2",
+    "discord.js": "^11.6.4",
+    "dotenv": "^4.0.0",
+    "request": "^2.88.2",
+    "sqlite3": "^5.0.0"
+  }
+}
