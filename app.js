@@ -46,7 +46,7 @@ client.once('ready', () => {
     guilds.push(guild)
   })
 
-  const retrieveNews = new CronJob('* * * * *', () => {
+  const retrieveNews = new CronJob('0 * * * *', () => {
     getLastNews(guilds).then(r => r)
   })
   retrieveNews.start()
