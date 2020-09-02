@@ -87,7 +87,7 @@ let getLastNews = async (guilds) => {
   console.log('GET LAST NEWS METHOD')
   await request(options, async (error, response, body) => {
     if (!error) {
-      let $ = cheerio.load(body), newsData = $('.views-row')
+      let $ = await cheerio.load(body), newsData = $('.views-row')
 
       if (newsData.length === 0) {
         console.log('Cookie was not up to date. Setting new cookies')
@@ -121,7 +121,7 @@ let getLastNews = async (guilds) => {
       })
 
       await news.reverse().map(async (_new, i) => {
-        const {title, link, desc, date, type} = _new
+        const { title, link, desc, date, type } = _new
 
         await guilds.map(async guild => {
           await db.get('SELECT * FROM news WHERE guild = ? AND date = ?', [guild.id, date], async (err, row) => {
@@ -134,7 +134,7 @@ let getLastNews = async (guilds) => {
                   .catch(err => console.log(err))
               }
 
-              db.run('INSERT INTO news (guild, name, date) VALUES (?, ?, ?)', [guild.id, (title + link), date], () => {
+              await db.run('INSERT INTO news (guild, name, date) VALUES (?, ?, ?)', [guild.id, (title + link), date], () => {
                 const embed = new Discord.RichEmbed()
                   .setTitle(title)
                   .setColor(0x00AE86)
