@@ -124,9 +124,8 @@ let getLastNews = async (guilds) => {
         const { title, link, desc, date, type } = _new
 
         await guilds.map(async guild => {
-          await db.get('SELECT * FROM news WHERE guild = ? AND date = ?', [guild.id, date], async (err, row) => {
-            if (row && row.name === (title + link)) return false
-            else {
+          await db.get('SELECT * FROM news WHERE guild = ? AND name = ? AND date = ?', [guild.id, (title + link), date], async (err, row) => {
+            if (!row) {
               if (i === 0) {
                 await guild.channels
                   .find(chan => chan.name === 'allods-news')
