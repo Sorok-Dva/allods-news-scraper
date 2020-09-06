@@ -2,7 +2,9 @@
 ## Start 
 This bot is live and is multi instances, if you just want to use it, add the bot to your server with this link : https://discord.com/oauth2/authorize?client_id=750703461581979758&scope=bot&permissions=191504
 
-You will need a channel called `allods-news` and the bot will put the news in this channel.
+You will need a channel called `allods-news` and the bot will put the news in this channel. 
+
+_(if this channel doesn't exists, the bot will itself create it and set permissions to @everyone can `READ` but not `WRITE` and @bot can `READ` & `WRITE`)_
 
 ## Hosting
 If you want to host your own instance,
