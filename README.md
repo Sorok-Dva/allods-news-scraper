@@ -1,4 +1,4 @@
-# Allods News Scrapper Discord Bot
+# Allods News Scraper Discord Bot
 ## Start 
 This bot is live and is multi instances, if you just want to use it, add the bot to your server with this link : https://discord.com/oauth2/authorize?client_id=750703461581979758&scope=bot&permissions=191504
 
