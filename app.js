@@ -73,19 +73,20 @@ client.once('ready', () => {
 
 client.on('guildCreate', async (guild) => {
   console.log(`Bot has join server "${guild.name}" (@${guild.id})`)
+  if (!guild.channels.find(chan => chan.name === 'allods-news')) await createChannel(guild)
+  await client.user.setActivity(`Give Allods News to ${guilds.length + 1} servers`)
   const row = await db.get('SELECT * FROM guilds WHERE id = ?', [guild.id])
   if (row === undefined) await db.run('INSERT INTO guilds(id) VALUES(?)', [guild.id])
-  guilds.push(guild)
-  await client.user.setActivity(`Give Allods News to ${guilds.length} servers`)
   await getLastNews(guild)
+  guilds.push(guild)
 })
 
 client.on('guildDelete', async (guild) => {
   console.log(`Bot has left server "${guild.name}" (@${guild.id})`)
   await db.get('DELETE FROM guilds WHERE id = ?', [guild.id])
   await db.get('DELETE FROM news WHERE guild = ?', [guild.id])
+  await client.user.setActivity(`Give Allods News to ${guilds.length - 1} servers`)
   guilds = guilds.filter(g => g.id !== guild.id)
-  await client.user.setActivity(`Give Allods News to ${guilds.length} servers`)
 })
 
 const getLastNews = async (guild) => {
@@ -139,6 +140,10 @@ const sendLastNews = async (news, guild) => {
   console.log('Sending news to ', (guild ? [guild] : guilds).length, ' servers')
   await (guild ? [guild] : guilds).map(async guild => {
     const channel = guild.channels.find(chan => chan.name === 'allods-news')
+    if (!channel) {
+      await createChannel(guild, true, news)
+      return false
+    }
     const embeds = []
 
     for (const _new of news) {
@@ -163,6 +168,13 @@ const sendLastNews = async (news, guild) => {
         .catch(err => console.log(err))
     }
   })
+}
+
+const createChannel = async (guild, retry = false, news) => {
+  await guild.createChannel('allods-news', {
+    reason: 'No `allods-news` channel was available',
+  })
+  if (retry) await sendLastNews(news, guild)
 }
 
 client.login(token)
