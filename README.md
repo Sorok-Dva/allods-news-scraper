@@ -12,5 +12,5 @@ If you want to host your own instance,
  - Start the app with a node process manager like `pm2` or `forever`
  - Invite the bot on your server followin this url https://discord.com/oauth2/authorize?client_id=CLIENTID&scope=bot&permissions=191504 (replace `CLIENTID` by your own)
  
- # TODO
- - [] Catch news by desired language, need to create a command and save language into sqlite db
+## TODO
+* [ ] Catch news by desired language, need to create a command and save language into sqlite db
