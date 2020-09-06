@@ -40,8 +40,7 @@ const setActivity = (client) => {
   if (activityTick === 0) {
     client.user.setActivity(`Giving Allods News to ${guilds.length} servers`)
     activityTick = 1
-  }
-  if (activityTick === 1) {
+  } else if (activityTick === 1) {
     client.user.setActivity(`Developed by Сорок два with ❤️`)
     activityTick = 0
   }
@@ -59,7 +58,7 @@ client.once('ready', () => {
   })
 
   const scrappingJob = new CronJob('0 * * * *', () => getLastNews(guilds).then(r => r))
-  const activityJob = new CronJob('*/15 * * * *', () => setActivity(client))
+  const activityJob = new CronJob('*/1 * * * *', () => setActivity(client))
 
   scrappingJob.start()
   activityJob.start()
@@ -106,6 +105,7 @@ let getLastNews = async (guilds) => {
       }
 
       const news = []
+      const embeds = []
 
       await newsData.map((i, e) => {
         if (i > 4) return false
@@ -119,6 +119,7 @@ let getLastNews = async (guilds) => {
 
         news.push({date, title, desc, link, type})
       })
+
 
       await news.reverse().map(async (_new, i) => {
         const { title, link, desc, date, type } = _new
@@ -137,18 +138,22 @@ let getLastNews = async (guilds) => {
               const embed = new Discord.RichEmbed()
                 .setTitle(title)
                 .setColor(0x00AE86)
-                .setDescription(desc)
+                .setDescription(`**[${date}]** ${desc}`)
                 .setThumbnail(type)
-                .setTimestamp()
+                //.setTimestamp()
                 .setURL('https://allods.my.games' + link)
-
-              await guild.channels
-                .find(chan => chan.name === 'allods-news')
-                .send({embed})
-                .catch(err => console.log(err))
+              embeds.push({ embed })
             }
           })
         })
+      })
+console.log(embeds)
+      await embeds.map(v => {
+	      console.log(v)
+	      guild.channels
+	                      .find(chan => chan.name === 'allods-news')
+	                      .send(v)
+	                      .catch(err => console.log(err))
       })
 
     } else {
