@@ -14,4 +14,4 @@ If you want to host your own instance,
  
 ## TODO
 * [ ] Catch news by desired language, need to create a command and save language into sqlite db
-* [ ] Auto give permissions and channel create to avoid `DiscordAPIError: Missing Permissions` error
+* [x] Auto give permissions and channel create to avoid `DiscordAPIError: Missing Permissions` error
