@@ -12,7 +12,7 @@ const Discord = require('discord.js'),
   CronJob = require('cron').CronJob,
   Bot = require('./bot')
 
-let guilds = [], activityTick = 0
+let guilds = [], activityTick = 0, botId
 
 const client = new Discord.Client()
 const token = config.BOT_TOKEN
@@ -53,7 +53,8 @@ const setActivity = (client) => {
 
 client.once('ready', () => {
   console.log('Bot connected')
-
+  botId = client.user.id
+  console.log(botId)
   client.guilds.forEach(async guild => {
     console.log({ name: guild.name, id: guild.id })
     const row = await db.get('SELECT * FROM guilds WHERE id = ?', [guild.id])
@@ -173,6 +174,18 @@ const sendLastNews = async (news, guild) => {
 const createChannel = async (guild, retry = false, news) => {
   await guild.createChannel('allods-news', {
     reason: 'No `allods-news` channel was available',
+    permissionOverwrites: [
+      {
+        id: guild.id,
+        allow: ['VIEW_CHANNEL'],
+        deny: ['SEND_MESSAGES', 'SEND_TTS_MESSAGES'],
+      },
+      {
+        id: botId,
+        allow: ['VIEW_CHANNEL', 'SEND_MESSAGES'],
+        deny: ['SEND_TTS_MESSAGES'],
+      },
+    ],
   })
   if (retry) await sendLastNews(news, guild)
 }
